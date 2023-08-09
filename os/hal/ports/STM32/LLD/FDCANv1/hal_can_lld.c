@@ -295,21 +295,22 @@ bool can_lld_start(CANDriver *canp) {
   }
 
   /* Configuration can be performed now.*/
-  canp->fdcan->CCCR   |= FDCAN_CCCR_CCE;
+  canp->fdcan->CCCR |= FDCAN_CCCR_CCE;
+  canp->fdcan->CCCR &= ~(FDCAN_CCCR_CSR | FDCAN_CCCR_CSA);
 
   /* Setting up operation mode except driver-controlled bits.*/
   canp->fdcan->NBTP   = canp->config->NBTP;
   canp->fdcan->DBTP   = canp->config->DBTP;
-  canp->fdcan->CCCR  = canp->config->CCCR | FDCAN_CCCR_CCE | FDCAN_CCCR_INIT;
-  /* TEST is only writable when FDCAN_CCCR_TEST is set and FDCAN is still in
-   * configuration mode */
-  if (canp->config->CCCR & FDCAN_CCCR_TEST) {
-	  canp->fdcan->TEST = canp->config->TEST;
-  }
+  canp->fdcan->CCCR  |= canp->config->CCCR & ~(FDCAN_CCCR_CSR | FDCAN_CCCR_CSA |
+                                               FDCAN_CCCR_CCE | FDCAN_CCCR_INIT);
+  canp->fdcan->TEST   = canp->config->TEST;
+#ifdef STM32G4XX
   canp->fdcan->RXGFC  = canp->config->RXGFC;
-
-  /* Start clock and disable configuration mode.*/
-  canp->fdcan->CCCR &= ~(FDCAN_CCCR_CSR | FDCAN_CCCR_INIT);
+#elif defined(STM32H7XX)
+  canp->fdcan->GFC    = canp->config->RXGFC;
+#else
+#error "Unsupported STM32 for FDCAN LLD driver"
+#endif
 
   /* Enabling interrupts, only using interrupt zero.*/
   canp->fdcan->IR     = (uint32_t)-1;
@@ -318,6 +319,22 @@ bool can_lld_start(CANDriver *canp) {
                         FDCAN_IE_TCE;
   canp->fdcan->TXBTIE = FDCAN_TXBTIE_TIE;
   canp->fdcan->ILE    = FDCAN_ILE_EINT0;
+
+#ifdef STM32H7XX
+  /* H7 version of FDCAN has configurable memory layout, so configure it */
+  canp->fdcan->SIDFC = STM32_FDCAN_FLS_NBR << 16 | SRAMCAN_FLSSA;
+  canp->fdcan->XIDFC = STM32_FDCAN_FLE_NBR << 16 | SRAMCAN_FLESA;
+  canp->fdcan->RXF0C = STM32_FDCAN_RF0_NBR << 16 | SRAMCAN_RF0SA;
+  canp->fdcan->RXF1C = STM32_FDCAN_RF1_NBR << 16 | SRAMCAN_RF1SA;
+  canp->fdcan->RXBC  = SRAMCAN_RBSA;
+  canp->fdcan->TXEFC = STM32_FDCAN_TEF_NBR << 16 | SRAMCAN_TEFSA;
+  /* NB: this doesn't set NDTB, but sets TFQS to run in queue mode with no dedicated buffers */
+  canp->fdcan->TXBC  = STM32_FDCAN_TB_NBR  << 24 | SRAMCAN_TBSA;
+
+  /* set to use the full 18-byte size buffer elements */
+  canp->fdcan->TXESC = 0x007;
+  canp->fdcan->RXESC = 0x777;
+#endif /* STM32H7XX */
 
   /* Going in active mode.*/
   if (fdcan_active_mode(canp)) {
