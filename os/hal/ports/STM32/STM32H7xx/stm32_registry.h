@@ -368,7 +368,7 @@
 /* CAN attributes.*/
 #define STM32_HAS_FDCAN1                    TRUE
 #define STM32_HAS_FDCAN2                    TRUE
-#define STM32_HAS_FDCAN3                    FALSE
+#define STM32_HAS_FDCAN3                    TRUE
 #define STM32_FDCAN_FLS_NBR                 128U
 #define STM32_FDCAN_FLE_NBR                 128U
 #define STM32_FDCAN_RF0_NBR                 64U
@@ -536,6 +536,14 @@
 #define STM32_HAS_TIM20                     FALSE
 #define STM32_HAS_TIM21                     FALSE
 #define STM32_HAS_TIM22                     FALSE
+
+#define STM32_HAS_TIM23                     TRUE
+#define STM32_TIM23_IS_32BITS               TRUE
+#define STM32_TIM23_CHANNELS                1
+
+#define STM32_HAS_TIM24                     TRUE
+#define STM32_TIM24_IS_32BITS               TRUE
+#define STM32_TIM24_CHANNELS                1
 
 /* USART attributes.*/
 #define STM32_HAS_USART1                    TRUE

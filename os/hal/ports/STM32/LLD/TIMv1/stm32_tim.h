@@ -477,6 +477,8 @@
 #define STM32_TIM20     ((stm32_tim_t *)TIM20_BASE)
 #define STM32_TIM21     ((stm32_tim_t *)TIM21_BASE)
 #define STM32_TIM22     ((stm32_tim_t *)TIM22_BASE)
+#define STM32_TIM23     ((stm32_tim_t *)TIM23_BASE)
+#define STM32_TIM24     ((stm32_tim_t *)TIM24_BASE)
 
 #define STM32_LPTIM1    ((stm32_lptim_t *)LPTIM1_BASE)
 #define STM32_LPTIM2    ((stm32_lptim_t *)LPTIM2_BASE)

@@ -178,6 +178,22 @@ PWMDriver PWMD21;
 PWMDriver PWMD22;
 #endif
 
+/**
+ * @brief   PWMD23 driver identifier.
+ * @note    The driver PWMD23 allocates the timer TIM23 when enabled.
+ */
+#if STM32_PWM_USE_TIM23 || defined(__DOXYGEN__)
+PWMDriver PWMD23;
+#endif
+
+/**
+ * @brief   PWMD24 driver identifier.
+ * @note    The driver PWMD24 allocates the timer TIM24 when enabled.
+ */
+#if STM32_PWM_USE_TIM24 || defined(__DOXYGEN__)
+PWMDriver PWMD24;
+#endif
+
 /*===========================================================================*/
 /* Driver local variables and types.                                         */
 /*===========================================================================*/
@@ -434,6 +450,18 @@ OSAL_IRQ_HANDLER(STM32_TIM8_CC_HANDLER) {
 #endif /* !defined(STM32_TIM22_SUPPRESS_ISR) */
 #endif /* STM32_PWM_USE_TIM22 */
 
+#if STM32_PWM_USE_TIM23 || defined(__DOXYGEN__)
+#if !defined(STM32_TIM23_SUPPRESS_ISR)
+#error "TIM23 ISR not defined by platform"
+#endif /* !defined(STM32_TIM23_SUPPRESS_ISR) */
+#endif /* STM32_PWM_USE_TIM23 */
+
+#if STM32_PWM_USE_TIM24 || defined(__DOXYGEN__)
+#if !defined(STM32_TIM24_SUPPRESS_ISR)
+#error "TIM24 ISR not defined by platform"
+#endif /* !defined(STM32_TIM24_SUPPRESS_ISR) */
+#endif /* STM32_PWM_USE_TIM24 */
+
 /*===========================================================================*/
 /* Driver exported functions.                                                */
 /*===========================================================================*/
@@ -588,6 +616,15 @@ void pwm_lld_init(void) {
   PWMD22.tim = STM32_TIM22;
   PWMD22.has_bdtr = false;
 #endif
+
+#if STM32_PWM_USE_TIM23
+  /* Driver initialization.*/
+  pwmObjectInit(&PWMD23);
+  PWMD23.channels = STM32_TIM23_CHANNELS;
+  PWMD23.tim = STM32_TIM23;
+  PWMD23.has_bdtr = false;
+#endif
+
 }
 
 /**

@@ -991,6 +991,14 @@ extern PWMDriver PWMD21;
 extern PWMDriver PWMD22;
 #endif
 
+#if STM32_PWM_USE_TIM23 && !defined(__DOXYGEN__)
+extern PWMDriver PWMD23;
+#endif
+
+#if STM32_PWM_USE_TIM24 && !defined(__DOXYGEN__)
+extern PWMDriver PWMD24;
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
