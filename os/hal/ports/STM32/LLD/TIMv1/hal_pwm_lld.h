@@ -673,6 +673,22 @@
 #endif
 #endif
 
+#if STM32_PWM_USE_TIM23
+#if defined(STM32_TIM23_IS_USED)
+#error "PWMD23 requires TIM23 but the timer is already used"
+#else
+#define STM32_TIM23_IS_USED
+#endif
+#endif
+
+#if STM32_PWM_USE_TIM24
+#if defined(STM32_TIM24_IS_USED)
+#error "PWMD24 requires TIM24 but the timer is already used"
+#else
+#define STM32_TIM24_IS_USED
+#endif
+#endif
+
 /* IRQ priority checks.*/
 #if STM32_PWM_USE_TIM1 && !defined(STM32_TIM1_SUPPRESS_ISR) &&              \
     !OSAL_IRQ_IS_VALID_PRIORITY(STM32_PWM_TIM1_IRQ_PRIORITY)
@@ -762,6 +778,16 @@
 #if STM32_PWM_USE_TIM22 && !defined(STM32_TIM22_SUPPRESS_ISR) &&            \
     !OSAL_IRQ_IS_VALID_PRIORITY(STM32_PWM_TIM22_IRQ_PRIORITY)
 #error "Invalid IRQ priority assigned to TIM22"
+#endif
+
+#if STM32_PWM_USE_TIM23 && !defined(STM32_TIM23_SUPPRESS_ISR) &&            \
+    !OSAL_IRQ_IS_VALID_PRIORITY(STM32_PWM_TIM23_IRQ_PRIORITY)
+#error "Invalid IRQ priority assigned to TIM23"
+#endif
+
+#if STM32_PWM_USE_TIM24 && !defined(STM32_TIM24_SUPPRESS_ISR) &&            \
+    !OSAL_IRQ_IS_VALID_PRIORITY(STM32_PWM_TIM24_IRQ_PRIORITY)
+#error "Invalid IRQ priority assigned to TIM24"
 #endif
 
 /*===========================================================================*/

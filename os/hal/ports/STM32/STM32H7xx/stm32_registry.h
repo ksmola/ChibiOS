@@ -358,7 +358,7 @@
 #define STM32_ADC_RENAMED_REGS              TRUE
 #define STM32_HAS_ADC1                      TRUE
 #define STM32_HAS_ADC2                      TRUE
-#define STM32_HAS_ADC3                      FALSE /* NOT an error, it is a different ADC type.*/
+#define STM32_HAS_ADC3                      TRUE /* NOT an error, it is a different ADC type.*/
 #define STM32_HAS_ADC4                      FALSE
 
 #define STM32_HAS_SDADC1                    FALSE
@@ -539,11 +539,11 @@
 
 #define STM32_HAS_TIM23                     TRUE
 #define STM32_TIM23_IS_32BITS               TRUE
-#define STM32_TIM23_CHANNELS                1
+#define STM32_TIM23_CHANNELS                4
 
 #define STM32_HAS_TIM24                     TRUE
 #define STM32_TIM24_IS_32BITS               TRUE
-#define STM32_TIM24_CHANNELS                1
+#define STM32_TIM24_CHANNELS                4
 
 /* USART attributes.*/
 #define STM32_HAS_USART1                    TRUE
