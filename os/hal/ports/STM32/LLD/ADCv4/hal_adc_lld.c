@@ -142,6 +142,9 @@ static void adc_lld_vreg_off(ADCDriver *adcp) {
 static void adc_lld_analog_on(ADCDriver *adcp) {
 
   adcp->adcm->ISR = ADC_ISR_ADRDY;
+  if (&ADCD3 == adcp) {
+    chThdSleep(1);  // work-around to not stall in while loop below
+  }
   adcp->adcm->CR |= ADC_CR_ADEN;
   while ((adcp->adcm->ISR & ADC_ISR_ADRDY) == 0U)
     ;
