@@ -369,14 +369,14 @@
 #define STM32_HAS_FDCAN1                    TRUE
 #define STM32_HAS_FDCAN2                    TRUE
 #define STM32_HAS_FDCAN3                    TRUE
-#define STM32_FDCAN_FLS_NBR                 64U
-#define STM32_FDCAN_FLE_NBR                 64U
-#define STM32_FDCAN_RF0_NBR                 32U
-#define STM32_FDCAN_RF1_NBR                 32U
-#define STM32_FDCAN_RB_NBR                  32U
-#define STM32_FDCAN_TEF_NBR                 32U
-#define STM32_FDCAN_TB_NBR                  32U
-#define STM32_FDCAN_TM_NBR                  32U
+#define STM32_FDCAN_FLS_NBR                 6U /* SIDFC.FLSSA, 11-bit filter, 1 word */
+#define STM32_FDCAN_FLE_NBR                 6U /* XIDFC.FLESA, 29-bit filter, 2 word */
+#define STM32_FDCAN_RF0_NBR                 14U /* RXF0C.F0SA, RX FIFO 0, 18 words */
+#define STM32_FDCAN_RF1_NBR                 14U /* RXF1C.F1SA, Rx FIFO 1, 18 words */
+#define STM32_FDCAN_RB_NBR                  0U /* RXBC.RBSA, Rx buffer, 18 words*/
+#define STM32_FDCAN_TEF_NBR                 0U /* TXEFC.EFSA, Tx event FIFO, 2 words */
+#define STM32_FDCAN_TB_NBR                  14U /* TXBC.TBSA, Tx buffers, 18 word */
+#define STM32_FDCAN_TM_NBR                  0U /* TMC.TMSA, Trigger memory, 2 words */
 
 /* DAC attributes.*/
 #define STM32_HAS_DAC1_CH1                  TRUE

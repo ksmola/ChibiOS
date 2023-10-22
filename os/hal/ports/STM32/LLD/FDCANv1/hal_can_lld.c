@@ -208,14 +208,14 @@ void can_lld_init(void) {
   /* Driver initialization.*/
   canObjectInit(&CAND2);
   CAND2.fdcan = FDCAN2;
-  CAND2.ram_base = (uint32_t *)(SRAMCAN_BASE + 1U * SRAMCAN_SIZE);
+  CAND2.ram_base = (uint32_t *)(SRAMCAN_BASE + 0U * SRAMCAN_SIZE);
 #endif
 
 #if STM32_CAN_USE_FDCAN3
   /* Driver initialization.*/
   canObjectInit(&CAND3);
   CAND3.fdcan = FDCAN3;
-  CAND3.ram_base = (uint32_t *)(SRAMCAN_BASE + 2U * SRAMCAN_SIZE);
+  CAND3.ram_base = (uint32_t *)(SRAMCAN_BASE + 0U * SRAMCAN_SIZE);
 #endif
 
   /* Configure global CKDIV for STM32G4XX */
