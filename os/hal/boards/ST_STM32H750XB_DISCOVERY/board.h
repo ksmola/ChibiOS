@@ -554,7 +554,7 @@
  * PB2  - MII_TX_ER_NINT            (alternate 11).
  * PB3  - SWO                       (alternate 0).
  * PB4  - PIN4                      (input floating).
- * PB5  - FDCAN2_RX                 (input floating).
+ * PB5  - FDCAN2_RX                 (alternate 9).
  * PB6  - PIN6                      (input floating).
  * PB7  - PIN7                      (input floating).
  * PB8  - SDIO1_D4                  (alternate 12).
@@ -571,7 +571,7 @@
                                      PIN_MODE_ALTERNATE(GPIOB_MII_TX_ER_NINT) |\
                                      PIN_MODE_ALTERNATE(GPIOB_SWO) |        \
                                      PIN_MODE_INPUT(GPIOB_PIN4) |           \
-                                     PIN_MODE_INPUT(GPIOB_FDCAN2_RX) |      \
+                                     PIN_MODE_ALTERNATE(GPIOB_FDCAN2_RX) |  \
                                      PIN_MODE_INPUT(GPIOB_PIN6) |           \
                                      PIN_MODE_INPUT(GPIOB_PIN7) |           \
                                      PIN_MODE_ALTERNATE(GPIOB_SDIO1_D4) |   \
