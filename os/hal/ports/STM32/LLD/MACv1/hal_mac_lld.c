@@ -146,7 +146,7 @@ static void mii_find_phy(MACDriver *macp) {
     for (i = 0U; i <= 31U; i++) {
       macp->phyaddr = i << 11U;
       ETH->MACMIIDR = (i << 6U) | MACMIIDR_CR;
-      if ((mii_read(macp, MII_PHYSID1) == (BOARD_PHY_ID >> 16U)) &&
+      if (((mii_read(macp, MII_PHYSID1) & 0xFFF0U) == (BOARD_PHY_ID >> 16U)) &&
           ((mii_read(macp, MII_PHYSID2) & 0xFFF0U) == (BOARD_PHY_ID & 0xFFF0U))) {
         return;
       }
