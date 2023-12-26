@@ -85,10 +85,61 @@
        DHQC.
 - NEW: Reworked STM32 SDMMCv1 and SDMMCv2 drivers, better timeout and clock
        handling, improved speed for aligned buffers.
-- FIX: Fixed unnecessary code in SNOR device drivers (bug #1265).
-- FIX: Fixed RP2040 HAL GPIO failed to compile (bug #1264).
-- FIX: Fixed channel 0 corruption on STM32 BDMAv1 (bug #1263).
-- FIX: Fixed wrong statistics in RT7 (bug #1262).
+- NEW: Added a "waend" field to the thread structure in RT for debug
+       convenience.
+- NEW: Added a para-virtualized HAL port for use in sandboxes.
+- NEW: Added a VIO subsystem to sandboxes supporting drivers
+       para-virtualization, PAL and SIO supported so far.
+- NEW: Added and RT port for use in virtualized sandboxes.
+- NEW: Added full virtualization support to sandboxes with a virtual IRQ
+       mechanism.
+- NEW: Added __CH_OWNEROF() macro to RT.
+- NEW: Added a Posix-favored shell named "msh" (Mini Shell). The shell is able
+       to run sub-apps inside the same sandbox. The shell can either be placed
+       statically in flash or loaded dynamically in RAM.
+- NEW: Added runnable "apps" capability to SBs, apps available so far: msh, ls.
+- NEW: Added ability to load ELF files to SBs.
+- NEW: Enhanced Posix API for SBs leveraging the VFS integration.
+- NEW: SBs and VFS integration. Each SB can see its own VFS instance.
+- NEW: Added integration of LittleFS on top of our flash infrastructure.
+- NEW: Added a new MEM_IS_VALID_FUNCTION() macro to RT and NIL.
+- NEW: Changed SB configuration options names to be prefixed with SB_CFG_.
+- NEW: Added a new CH_CFG_HARDENING_LEVEL option to RT.
+- NEW: Added a chXXXDispose() function to all objects in NIL.
+- NEW: Added a chXXXDispose() function to all objects in RT.
+- NEW: Added VFS-related commands to the shell, disabled by default.
+- NEW: Added a new VFS subsystem (Virtual File System), it allows to assemble
+       trees of files from multiple "File System Drivers" into a single tree
+       and access it as a whole.
+- NEW: Added MEM_NATURAL_ALIGN macro to RT and NIL.
+- NEW: Added static initializer for virtual timers in RT.
+- NEW: Added new function chHeapIntegrityCheck().
+- NEW: Function chCoreGetStatusX() changed to return a memory region object
+       instead of a simple size.
+- NEW: RT and NIL upgraded to support the enhanced OSLIB.
+- NEW: Memory areas/pointers checker functions added to OSLIB.
+- FIX: Fixed interrupts not enabled for STM32H735 TIM15, TIM16 and TIM17
+       (bug #1280)(backported to 21.11.4).
+- FIX: Fixed wrong STM32 LSI activation check (bug #1279)
+       (backported to 21.11.4).
+- FIX: Fixed STM32 HAL UART ISR flaw (bug #1278)(backported to 21.11.4).
+- FIX: Fixed race condition caused by chGuardedPoolAllocI() (bug #1277)
+       (backported to 20.3.5)(backported to 21.11.4).
+- FIX: Fixed avoid shadowing with build-in pow10 function in chprintf.c
+       (bug #1274)(backported to 20.3.5)(backported to 21.11.4).
+- FIX: Fixed enabling PWM on TIM1, 3, 4 causes compile errors in
+       RT-STM32G0B1RE-NUCLEO64 (bug #1273)(backported to 21.11.4).
+- FIX: Wrong assertion in STM32 SPIv3 on SPI6 start.
+- FIX: Fixed problems related to TIM3, TIM4 and TIM16 on STM32G0.
+- FIX: Fixed uninitialized return message in EX subsystem (bug #1267)
+       (backported to 21.11.4).
+- FIX: Fixed unnecessary code in SNOR device drivers (bug #1265)
+       (backported to 20.3.5)(backported to 21.11.4).
+- FIX: Fixed RP2040 HAL GPIO failed to compile (bug #1264)
+       (backported to 21.11.4).
+- FIX: Fixed channel 0 corruption on STM32 BDMAv1 (bug #1263)
+       (backported to 20.3.5)(backported to 21.11.4).
+- FIX: Fixed wrong statistics in RT7 (bug #1262)(backported to 21.11.4).
 - FIX: Fixed missing cache management during Cortex-M RAM initializations
        (bug #1261).
 - FIX: Fixed RTC & TAMP interrupts not functional (bug #1260).
