@@ -30,58 +30,80 @@
 /* Driver local definitions.                                                 */
 /*===========================================================================*/
 
-/* Filter Standard Element Size in bytes.*/
-#define SRAMCAN_FLS_SIZE                (1U * 4U)
+/* Value of instance */
+#if (STM32_CAN_USE_FDCAN1 && STM32_CAN_USE_FDCAN2 && STM32_CAN_USE_FDCAN3)
+#define CAN1_OFFSET_INSTANCE            (0U) // CAN1 DEFINED
+#define CAN2_OFFSET_INSTANCE            (1U) // CAN2 DEFINED
+#define CAN3_OFFSET_INSTANCE            (2U) // CAN3 DEFINED
+#elif (STM32_CAN_USE_FDCAN1 && STM32_CAN_USE_FDCAN2 && !STM32_CAN_USE_FDCAN3)
+#define CAN1_OFFSET_INSTANCE            (0U) // CAN1 DEFINED
+#define CAN2_OFFSET_INSTANCE            (1U) // CAN2 DEFINED
+#elif (STM32_CAN_USE_FDCAN1 && STM32_CAN_USE_FDCAN3 && !STM32_CAN_USE_FDCAN2)
+#define CAN1_OFFSET_INSTANCE            (0U) // CAN1 DEFINED
+#define CAN3_OFFSET_INSTANCE            (1U) // CAN3 DEFINED
+#elif (STM32_CAN_USE_FDCAN2 && STM32_CAN_USE_FDCAN3 && !STM32_CAN_USE_FDCAN1)
+#define CAN2_OFFSET_INSTANCE            (0U) // CAN2 DEFINED
+#define CAN3_OFFSET_INSTANCE            (1U) // CAN3 DEFINED
+#elif (STM32_CAN_USE_FDCAN1 && !STM32_CAN_USE_FDCAN2 && !STM32_CAN_USE_FDCAN3)
+#define CAN1_OFFSET_INSTANCE            (0U) // CAN1 DEFINED
+#elif (STM32_CAN_USE_FDCAN2 && !STM32_CAN_USE_FDCAN1 && !STM32_CAN_USE_FDCAN3)
+#define CAN2_OFFSET_INSTANCE            (0U) // CAN2 DEFINED
+#elif (STM32_CAN_USE_FDCAN3 && !STM32_CAN_USE_FDCAN1 && !STM32_CAN_USE_FDCAN2)
+#define CAN3_OFFSET_INSTANCE            (0U) // CAN3 DEFINED
+#endif
 
-/* Filter Extended Element Size in bytes.*/
-#define SRAMCAN_FLE_SIZE                (2U * 4U)
+/* Filter Standard Element MAX Size in WORDS for single element. */
+#define SRAMCAN_FLS_SIZE                (1U)
 
-/* RX FIFO 0 Elements Size in bytes.*/
-#define SRAMCAN_RF0_SIZE                (18U * 4U)
+/* Filter Extended Element MAX Size in WORDS for single element.*/
+#define SRAMCAN_FLE_SIZE                (2U)
 
-/* RX FIFO 1 Elements Size in bytes.*/
-#define SRAMCAN_RF1_SIZE                (18U * 4U)
+/* RX FIFO 0 Elements MAX Size in WORDS for single element.*/
+#define SRAMCAN_RF0_SIZE                (18U)
 
-/* RX Buffer Size in bytes.*/
-#define SRAMCAN_RB_SIZE                 (18U * 4U)
+/* RX FIFO 1 Elements MAX Size in WORDS for single element.*/
+#define SRAMCAN_RF1_SIZE                (18U)
 
-/* TX Event FIFO Elements Size in bytes.*/
-#define SRAMCAN_TEF_SIZE                (2U * 4U)
+/* RX Buffer MAX Size in WORDS for single element.*/
+#define SRAMCAN_RB_SIZE                 (18U)
 
-/* TX FIFO/Queue Elements Size in bytes.*/
-#define SRAMCAN_TB_SIZE                 (18U * 4U)
+/* TX Event FIFO Elements MAX Size in WORDS for single element.*/
+#define SRAMCAN_TEF_SIZE                (2U)
 
-/* Trigger Memory Size in bytes.*/
-#define SRAMCAN_TM_SIZE                 (2U * 4U)
+/* TX FIFO/Queue Elements MAX Size in WORDS for single element.*/
+#define SRAMCAN_TB_SIZE                 (18U)
 
-/* Filter List Standard Start Address.*/
+/* Trigger Memory MAX Size in WORDS for single element.*/
+#define SRAMCAN_TM_SIZE                 (2U)
+
+/* Filter List Standard Offset.*/
 #define SRAMCAN_FLSSA ((uint32_t)0)
 
-/* Filter List Extended Start Address.*/
+/* Filter List Extended Offset.*/
 #define SRAMCAN_FLESA ((uint32_t)(SRAMCAN_FLSSA +                           \
                                   (STM32_FDCAN_FLS_NBR * SRAMCAN_FLS_SIZE)))
 
-/* RX FIFO 0 Start Address.*/
+/* RX FIFO 0 Offset.*/
 #define SRAMCAN_RF0SA ((uint32_t)(SRAMCAN_FLESA +                           \
                                   (STM32_FDCAN_FLE_NBR * SRAMCAN_FLE_SIZE)))
 
-/* RX FIFO 1 Start Address.*/
+/* RX FIFO 1 Offset.*/
 #define SRAMCAN_RF1SA ((uint32_t)(SRAMCAN_RF0SA +                           \
                                   (STM32_FDCAN_RF0_NBR * SRAMCAN_RF0_SIZE)))
 
-/* RX Buffer Start Address.*/
+/* RX Buffer Offset.*/
 #define SRAMCAN_RBSA  ((uint32_t)(SRAMCAN_RF1SA +                           \
                                   (STM32_FDCAN_RF1_NBR * SRAMCAN_RF1_SIZE)))
 
-/* TX Event FIFO Start Address.*/
+/* TX Event FIFO Offset.*/
 #define SRAMCAN_TEFSA ((uint32_t)(SRAMCAN_RBSA +                            \
                                   (STM32_FDCAN_RB_NBR * SRAMCAN_RB_SIZE)))
 
-/* TX Buffers Start Address.*/
+/* TX Buffers Offset.*/
 #define SRAMCAN_TBSA  ((uint32_t)(SRAMCAN_TEFSA +                           \
                                   (STM32_FDCAN_TEF_NBR * SRAMCAN_TEF_SIZE)))
 
-/* Trigger Memory Start Address.*/
+/* Trigger Memory Offset.*/
 #define SRAMCAN_TMSA  ((uint32_t)(SRAMCAN_TBSA +                            \
                                   (STM32_FDCAN_TB_NBR * SRAMCAN_TB_SIZE)))
 
@@ -119,8 +141,6 @@ static const uint8_t dlc_to_bytes[] = {
   0U,  1U,  2U,  3U,  4U,  5U,  6U,  7U,
   8U, 12U, 16U, 20U, 24U, 32U, 48U, 64U
 };
-
-static uint32_t canclk;
 
 /*===========================================================================*/
 /* Driver local functions.                                                   */
@@ -192,8 +212,6 @@ static bool fdcan_active_mode(CANDriver *canp) {
  */
 void can_lld_init(void) {
 
-  canclk = 0U;
-
   /* Unit reset.*/
   rccResetFDCAN();
 
@@ -201,7 +219,7 @@ void can_lld_init(void) {
   /* Driver initialization.*/
   canObjectInit(&CAND1);
   CAND1.fdcan = FDCAN1;
-  CAND1.ram_base = (uint32_t *)(SRAMCAN_BASE + 0U * SRAMCAN_SIZE);
+  CAND1.ram_base = ((uint32_t *)SRAMCAN_BASE + (CAN1_OFFSET_INSTANCE * SRAMCAN_SIZE));
 #endif
 
 #if STM32_CAN_USE_FDCAN2
@@ -256,31 +274,11 @@ bool can_lld_start(CANDriver *canp) {
 
   /* If it is the first activation then performing some extra
      initializations.*/
-  if (canclk == 0U) {
-    for (uint32_t *wp = canp->ram_base;
-         wp < canp->ram_base + SRAMCAN_SIZE;
-         wp += 1U) {
-      *wp = (uint32_t)0U;
-    }
+  for (uint32_t *wp = canp->ram_base;
+       wp < canp->ram_base + SRAMCAN_SIZE;
+       wp += 1U) {
+    *wp = (uint32_t)0U;
   }
-
-#if STM32_CAN_USE_FDCAN1
-  if (&CAND1 == canp) {
-    canclk |= 1U;
-  }
-#endif
-
-#if STM32_CAN_USE_FDCAN2
-  if (&CAND2 == canp) {
-    canclk |= 2U;
-  }
-#endif
-
-#if STM32_CAN_USE_FDCAN3
-  if (&CAND3 == canp) {
-    canclk |= 4U;
-  }
-#endif
 
   /* Requesting clock stop.*/
   if (fdcan_clock_stop(canp)) {
@@ -365,27 +363,7 @@ void can_lld_stop(CANDriver *canp) {
     /* Disables the peripheral.*/
     (void) fdcan_clock_stop(canp);
 
-#if STM32_CAN_USE_FDCAN1
-    if (&CAND1 == canp) {
-      canclk &= ~1U;
-    }
-#endif
-
-#if STM32_CAN_USE_FDCAN2
-    if (&CAND2 == canp) {
-      canclk &= ~2U;
-    }
-#endif
-
-#if STM32_CAN_USE_FDCAN3
-    if (&CAND3 == canp) {
-      canclk &= ~4U;
-    }
-#endif
-
-    if (canclk == 0U) {
-      rccDisableFDCAN();
-    }
+    rccDisableFDCAN();
   }
 }
 
@@ -405,7 +383,8 @@ bool can_lld_is_tx_empty(CANDriver *canp, canmbx_t mailbox) {
 
   (void)mailbox;
 
-  return (bool)((canp->fdcan->TXFQS & FDCAN_TXFQS_TFQF) == 0U);
+  return (bool)(((canp->fdcan->TXFQS & FDCAN_TXFQS_TFQF) == 0U) &&
+                ((canp->fdcan->TXFQS & FDCAN_TXFQS_TFFL) > 0U));
 }
 
 /**
@@ -418,8 +397,8 @@ bool can_lld_is_tx_empty(CANDriver *canp, canmbx_t mailbox) {
  * @notapi
  */
 void can_lld_transmit(CANDriver *canp, canmbx_t mailbox, const CANTxFrame *ctfp) {
-  uint32_t put_index;
-  uint32_t *tx_address;
+  uint32_t put_index = 0;
+  uint32_t *tx_address = 0;
 
   (void)mailbox;
 
@@ -428,9 +407,8 @@ void can_lld_transmit(CANDriver *canp, canmbx_t mailbox, const CANTxFrame *ctfp)
   /* Retrieve the TX FIFO put index.*/
   put_index = ((canp->fdcan->TXFQS & FDCAN_TXFQS_TFQPI) >> FDCAN_TXFQS_TFQPI_Pos);
 
-  /* Writing frame.*/
-  tx_address = canp->ram_base +
-               ((SRAMCAN_TBSA + (put_index * SRAMCAN_TB_SIZE)) / sizeof (uint32_t));
+  /* Writing frame. */
+  tx_address = canp->ram_base + (SRAMCAN_TBSA + (put_index * 4U)); //4U Element size in ram words
 
   *tx_address++ = ctfp->header32[0];
   *tx_address++ = ctfp->header32[1];
@@ -497,14 +475,12 @@ void can_lld_receive(CANDriver *canp, canmbx_t mailbox, CANRxFrame *crfp) {
   if (mailbox == 1U) {
      /* GET index RXF0, add it and the length to the rx_address.*/
      get_index = (canp->fdcan->RXF0S & FDCAN_RXF0S_F0GI_Msk) >> FDCAN_RXF0S_F0GI_Pos;
-     rx_address = canp->ram_base + (SRAMCAN_RF0SA +
-                                    (get_index * SRAMCAN_RF0_SIZE)) / sizeof (uint32_t);
+     rx_address = canp->ram_base + ((SRAMCAN_RF0SA + (get_index * 4U))); //4U Element size in ram words
   }
   else {
      /* GET index RXF1, add it and the length to the rx_address.*/
      get_index = (canp->fdcan->RXF1S & FDCAN_RXF1S_F1GI_Msk) >> FDCAN_RXF1S_F1GI_Pos;
-     rx_address = canp->ram_base + (SRAMCAN_RF1SA +
-                                    (get_index * SRAMCAN_RF1_SIZE)) / sizeof (uint32_t);
+     rx_address = canp->ram_base + ((SRAMCAN_RF1SA + (get_index * 4U))); //4U Element size in ram words
   }
   crfp->header32[0] = *rx_address++;
   crfp->header32[1] = *rx_address++;
@@ -525,7 +501,6 @@ void can_lld_receive(CANDriver *canp, canmbx_t mailbox, CANRxFrame *crfp) {
     canp->fdcan->RXF0A = rxf0a;
 
     if (!can_lld_is_rx_nonempty(canp, mailbox)) {
-//      canp->fdcan->IR  = FDCAN_IR_RF0N;
       canp->fdcan->IE |= FDCAN_IE_RF0NE;
     }
   }
@@ -536,7 +511,6 @@ void can_lld_receive(CANDriver *canp, canmbx_t mailbox, CANRxFrame *crfp) {
     canp->fdcan->RXF1A = rxf1a;
 
     if (!can_lld_is_rx_nonempty(canp, mailbox)) {
-//      canp->fdcan->IR  = FDCAN_IR_RF1N;
       canp->fdcan->IE |= FDCAN_IE_RF1NE;
     }
   }
@@ -590,7 +564,7 @@ void can_lld_wakeup(CANDriver *canp) {
  * @notapi
  */
 void can_lld_serve_interrupt(CANDriver *canp) {
-  uint32_t ir;
+  uint32_t ir = 0;
 
   /* Getting and clearing active IRQs.*/
   ir = canp->fdcan->IR;
