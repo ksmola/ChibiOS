@@ -154,6 +154,10 @@
 #error "STM32_HAS_FDCAN1 is required for configuring STM32_CAN_CKDIV != 0"
 #endif
 
+#if defined(STM32G4XX) && ((STM32_CAN_CKDIV != 0) && !defined(STM32_CAN_USE_FDCAN1))
+#error "STM32_HAS_FDCAN1 is required for configuring STM32_CAN_CKDIV != 0"
+#endif
+
 /*===========================================================================*/
 /* Driver data structures and types.                                         */
 /*===========================================================================*/

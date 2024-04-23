@@ -226,14 +226,14 @@ void can_lld_init(void) {
   /* Driver initialization.*/
   canObjectInit(&CAND2);
   CAND2.fdcan = FDCAN2;
-  CAND2.ram_base = (uint32_t *)(SRAMCAN_BASE + 0U * SRAMCAN_SIZE);
+  CAND2.ram_base = ((uint32_t *)SRAMCAN_BASE + (CAN2_OFFSET_INSTANCE * SRAMCAN_SIZE));
 #endif
 
 #if STM32_CAN_USE_FDCAN3
   /* Driver initialization.*/
   canObjectInit(&CAND3);
   CAND3.fdcan = FDCAN3;
-  CAND3.ram_base = (uint32_t *)(SRAMCAN_BASE + 0U * SRAMCAN_SIZE);
+  CAND3.ram_base = ((uint32_t *)SRAMCAN_BASE + (CAN3_OFFSET_INSTANCE * SRAMCAN_SIZE));
 #endif
 
   /* Configure global CKDIV for STM32G4XX */
@@ -294,14 +294,17 @@ bool can_lld_start(CANDriver *canp) {
 
   /* Configuration can be performed now.*/
   canp->fdcan->CCCR |= FDCAN_CCCR_CCE;
-  canp->fdcan->CCCR &= ~(FDCAN_CCCR_CSR | FDCAN_CCCR_CSA);
 
   /* Setting up operation mode except driver-controlled bits.*/
-  canp->fdcan->NBTP   = canp->config->NBTP;
-  canp->fdcan->DBTP   = canp->config->DBTP;
-  canp->fdcan->CCCR  |= canp->config->CCCR & ~(FDCAN_CCCR_CSR | FDCAN_CCCR_CSA |
-                                               FDCAN_CCCR_CCE | FDCAN_CCCR_INIT);
-  canp->fdcan->TEST   = canp->config->TEST;
+  canp->fdcan->NBTP = canp->config->NBTP;
+  canp->fdcan->DBTP = canp->config->DBTP;
+  canp->fdcan->CCCR |= canp->config->CCCR;
+
+  /* TEST is only writable when FDCAN_CCCR_TEST is set and FDCAN is still in
+   * configuration mode */
+  if (canp->config->CCCR & FDCAN_CCCR_TEST) {
+    canp->fdcan->TEST = canp->config->TEST;
+  }
 #ifdef STM32G4XX
   canp->fdcan->RXGFC  = canp->config->RXGFC;
 #elif defined(STM32H7XX)
@@ -310,6 +313,64 @@ bool can_lld_start(CANDriver *canp) {
 #error "Unsupported STM32 for FDCAN LLD driver"
 #endif
 
+#ifdef STM32H7XX
+
+#if STM32_CAN_USE_FDCAN1
+  if (&CAND1 == canp) {
+    /* TODO: ADD MASK */
+    /* H7 version of FDCAN has configurable memory layout, so configure it */
+    canp->fdcan->SIDFC = (((STM32_FDCAN_FLS_NBR) << 16) | (((CAN1_OFFSET_INSTANCE * SRAMCAN_SIZE) + SRAMCAN_FLSSA) << 2));
+    canp->fdcan->XIDFC = (((STM32_FDCAN_FLE_NBR) << 16) | (((CAN1_OFFSET_INSTANCE * SRAMCAN_SIZE) + SRAMCAN_FLESA) << 2));
+    canp->fdcan->RXF0C = (((STM32_FDCAN_RF0_NBR) << 16) | (((CAN1_OFFSET_INSTANCE * SRAMCAN_SIZE) + SRAMCAN_RF0SA) << 2));
+    canp->fdcan->RXF1C = (((STM32_FDCAN_RF1_NBR) << 16) | (((CAN1_OFFSET_INSTANCE * SRAMCAN_SIZE) + SRAMCAN_RF1SA) << 2));
+    canp->fdcan->RXBC  = (((CAN1_OFFSET_INSTANCE * SRAMCAN_SIZE) + SRAMCAN_RBSA) << 2);
+    canp->fdcan->TXEFC = (((STM32_FDCAN_TEF_NBR) << 16) | (((CAN1_OFFSET_INSTANCE * SRAMCAN_SIZE) + SRAMCAN_TEFSA) << 2));
+    /* NB: this doesn't set NDTB, but sets TFQS to run in queue mode with no dedicated buffers */
+    canp->fdcan->TXBC  = (((STM32_FDCAN_TB_NBR)  << 24) | (((CAN1_OFFSET_INSTANCE * SRAMCAN_SIZE) + SRAMCAN_TBSA) << 2));
+  }
+#endif
+
+#if STM32_CAN_USE_FDCAN2
+  if (&CAND2 == canp) {
+    /* TODO: ADD MASK */
+    /* H7 version of FDCAN has configurable memory layout, so configure it */
+    canp->fdcan->SIDFC = (((STM32_FDCAN_FLS_NBR) << 16) | (((CAN2_OFFSET_INSTANCE * SRAMCAN_SIZE) + SRAMCAN_FLSSA) << 2));
+    canp->fdcan->XIDFC = (((STM32_FDCAN_FLE_NBR) << 16) | (((CAN2_OFFSET_INSTANCE * SRAMCAN_SIZE) + SRAMCAN_FLESA) << 2));
+    canp->fdcan->RXF0C = (((STM32_FDCAN_RF0_NBR) << 16) | (((CAN2_OFFSET_INSTANCE * SRAMCAN_SIZE) + SRAMCAN_RF0SA) << 2));
+    canp->fdcan->RXF1C = (((STM32_FDCAN_RF1_NBR) << 16) | (((CAN2_OFFSET_INSTANCE * SRAMCAN_SIZE) + SRAMCAN_RF1SA) << 2));
+    canp->fdcan->RXBC  = (((CAN2_OFFSET_INSTANCE * SRAMCAN_SIZE) + SRAMCAN_RBSA) << 2);
+    canp->fdcan->TXEFC = (((STM32_FDCAN_TEF_NBR) << 16) | (((CAN2_OFFSET_INSTANCE * SRAMCAN_SIZE) + SRAMCAN_TEFSA) << 2));
+    /* NB: this doesn't set NDTB, but sets TFQS to run in queue mode with no dedicated buffers */
+    canp->fdcan->TXBC  = (((STM32_FDCAN_TB_NBR)  << 24) | (((CAN2_OFFSET_INSTANCE * SRAMCAN_SIZE) + SRAMCAN_TBSA) << 2));
+  }
+#endif
+
+#if STM32_CAN_USE_FDCAN3
+  if (&CAND3 == canp) {
+    /* TODO: ADD MASK */
+    /* H7 version of FDCAN has configurable memory layout, so configure it */
+    canp->fdcan->SIDFC = (((STM32_FDCAN_FLS_NBR) << 16) | (((CAN3_OFFSET_INSTANCE * SRAMCAN_SIZE) + SRAMCAN_FLSSA) << 2));
+    canp->fdcan->XIDFC = (((STM32_FDCAN_FLE_NBR) << 16) | (((CAN3_OFFSET_INSTANCE * SRAMCAN_SIZE) + SRAMCAN_FLESA) << 2));
+    canp->fdcan->RXF0C = (((STM32_FDCAN_RF0_NBR) << 16) | (((CAN3_OFFSET_INSTANCE * SRAMCAN_SIZE) + SRAMCAN_RF0SA) << 2));
+    canp->fdcan->RXF1C = (((STM32_FDCAN_RF1_NBR) << 16) | (((CAN3_OFFSET_INSTANCE * SRAMCAN_SIZE) + SRAMCAN_RF1SA) << 2));
+    canp->fdcan->RXBC  = (((CAN3_OFFSET_INSTANCE * SRAMCAN_SIZE) + SRAMCAN_RBSA) << 2);
+    canp->fdcan->TXEFC = (((STM32_FDCAN_TEF_NBR) << 16) | (((CAN3_OFFSET_INSTANCE * SRAMCAN_SIZE) + SRAMCAN_TEFSA) << 2));
+    /* NB: this doesn't set NDTB, but sets TFQS to run in queue mode with no dedicated buffers */
+    canp->fdcan->TXBC  = (((STM32_FDCAN_TB_NBR)  << 24) | (((CAN3_OFFSET_INSTANCE * SRAMCAN_SIZE) + SRAMCAN_TBSA) << 2));
+  }
+#endif
+
+  /* TODO: ADD IN CONFIG DATA FIELD. */
+  /* Data field. Data field sizes > 8
+     bytes are intended for CAN FD operation only.  */
+  canp->fdcan->TXESC = 0x0;
+  canp->fdcan->RXESC = 0x0;
+
+#endif /* STM32H7XX */
+
+  /* Start clock and disable configuration mode.*/
+  canp->fdcan->CCCR &= ~(FDCAN_CCCR_CSR);
+
   /* Enabling interrupts, only using interrupt zero.*/
   canp->fdcan->IR     = (uint32_t)-1;
   canp->fdcan->IE     = FDCAN_IE_RF1NE | FDCAN_IE_RF1LE |
@@ -317,22 +378,6 @@ bool can_lld_start(CANDriver *canp) {
                         FDCAN_IE_TCE;
   canp->fdcan->TXBTIE = FDCAN_TXBTIE_TIE;
   canp->fdcan->ILE    = FDCAN_ILE_EINT0;
-
-#ifdef STM32H7XX
-  /* H7 version of FDCAN has configurable memory layout, so configure it */
-  canp->fdcan->SIDFC = STM32_FDCAN_FLS_NBR << 16 | SRAMCAN_FLSSA;
-  canp->fdcan->XIDFC = STM32_FDCAN_FLE_NBR << 16 | SRAMCAN_FLESA;
-  canp->fdcan->RXF0C = STM32_FDCAN_RF0_NBR << 16 | SRAMCAN_RF0SA;
-  canp->fdcan->RXF1C = STM32_FDCAN_RF1_NBR << 16 | SRAMCAN_RF1SA;
-  canp->fdcan->RXBC  = SRAMCAN_RBSA;
-  canp->fdcan->TXEFC = STM32_FDCAN_TEF_NBR << 16 | SRAMCAN_TEFSA;
-  /* NB: this doesn't set NDTB, but sets TFQS to run in queue mode with no dedicated buffers */
-  canp->fdcan->TXBC  = STM32_FDCAN_TB_NBR  << 24 | SRAMCAN_TBSA;
-
-  /* set to use the full 18-byte size buffer elements */
-  canp->fdcan->TXESC = 0x007;
-  canp->fdcan->RXESC = 0x777;
-#endif /* STM32H7XX */
 
   /* Going in active mode.*/
   if (fdcan_active_mode(canp)) {
