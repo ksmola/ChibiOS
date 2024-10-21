@@ -350,7 +350,7 @@
 #define STM32_ADC_RENAMED_REGS              TRUE
 #define STM32_HAS_ADC1                      TRUE
 #define STM32_HAS_ADC2                      TRUE
-#define STM32_HAS_ADC3                      FALSE /* NOT an error, it is a different ADC type.*/
+#define STM32_HAS_ADC3                      TRUE
 #define STM32_HAS_ADC4                      FALSE
 
 #define STM32_HAS_SDADC1                    FALSE
