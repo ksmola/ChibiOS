@@ -625,6 +625,14 @@ void pwm_lld_init(void) {
   PWMD23.has_bdtr = false;
 #endif
 
+#if STM32_PWM_USE_TIM24
+  /* Driver initialization.*/
+  pwmObjectInit(&PWMD24);
+  PWMD24.channels = STM32_TIM24_CHANNELS;
+  PWMD24.tim = STM32_TIM24;
+  PWMD24.has_bdtr = false;
+#endif
+
 }
 
 /**
@@ -872,6 +880,30 @@ void pwm_lld_start(PWMDriver *pwmp) {
       rccResetTIM22();
 #if defined(STM32_TIM22CLK)
       pwmp->clock = STM32_TIM22CLK;
+#else
+      pwmp->clock = STM32_TIMCLK1;
+#endif
+    }
+#endif
+
+#if STM32_PWM_USE_TIM23
+    if (&PWMD23 == pwmp) {
+      rccEnableTIM23(true);
+      rccResetTIM23();
+#if defined(STM32_TIM23CLK)
+      pwmp->clock = STM32_TIM23CLK;
+#else
+      pwmp->clock = STM32_TIMCLK1;
+#endif
+    }
+#endif
+
+#if STM32_PWM_USE_TIM24
+    if (&PWMD24 == pwmp) {
+      rccEnableTIM24(true);
+      rccResetTIM24();
+#if defined(STM32_TIM24CLK)
+      pwmp->clock = STM32_TIM24CLK;
 #else
       pwmp->clock = STM32_TIMCLK1;
 #endif

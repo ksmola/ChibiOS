@@ -2171,7 +2171,52 @@ __STATIC_INLINE void rccResetAHB4(uint32_t mask) {
  * @api
  */
 #define rccResetTIM17() rccResetAPB2(RCC_APB2RSTR_TIM17RST)
-/** @} */
+
+/**
+ * @brief   Enables the TIM23 peripheral clock.
+ *
+ * @param[in] lp        low power enable flag
+ *
+ * @api
+ */
+#define rccEnableTIM23(lp) rccEnableAPB1H(RCC_APB1HENR_TIM23EN, lp)
+
+/**
+ * @brief   Disables the TIM23 peripheral clock.
+ *
+ * @api
+ */
+#define rccDisableTIM23() rccDisableAPB1H(RCC_APB1HENR_TIM23EN)
+
+/**
+ * @brief   Resets the TIM23 peripheral.
+ *
+ * @api
+ */
+#define rccResetTIM23() rccResetAPB1H(RCC_APB1HRSTR_TIM23RST)
+
+/**
+ * @brief   Enables the TIM24 peripheral clock.
+ *
+ * @param[in] lp        low power enable flag
+ *
+ * @api
+ */
+#define rccEnableTIM24(lp) rccEnableAPB1H(RCC_APB1HENR_TIM24EN, lp)
+
+/**
+ * @brief   Disables the TIM24 peripheral clock.
+ *
+ * @api
+ */
+#define rccDisableTIM24() rccDisableAPB1H(RCC_APB1HENR_TIM24EN)
+
+/**
+ * @brief   Resets the TIM24 peripheral.
+ *
+ * @api
+ */
+#define rccResetTIM24() rccResetAPB1H(RCC_APB1HRSTR_TIM24RST)
 
 /**
  * @name    USART/UART peripherals specific RCC operations
