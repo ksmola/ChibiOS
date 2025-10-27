@@ -118,13 +118,17 @@ msg_t canStart(CANDriver *canp, const CANConfig *config) {
      be performed inside.*/
 #if defined(CAN_LLD_ENHANCED_API)
   msg = can_lld_start(canp);
-#else
-  can_lld_start(canp);
-  msg = HAL_RET_SUCCESS;
-#endif
   if (msg == HAL_RET_SUCCESS) {
     canp->state = CAN_READY;
   }
+  else {
+    canp->state = CAN_STOP;
+  }
+#else
+  can_lld_start(canp);
+  canp->state = CAN_READY;
+  msg = HAL_RET_SUCCESS;
+#endif
 
   osalSysUnlock();
 
@@ -260,7 +264,6 @@ void canTryAbortX(CANDriver *canp,
  *                      the following special values are allowed:
  *                      - @a TIME_IMMEDIATE immediate timeout.
  *                      - @a TIME_INFINITE no timeout.
- *                      .
  * @return              The operation result.
  * @retval MSG_OK       the frame has been queued for transmission.
  * @retval MSG_TIMEOUT  The operation has timed out.
@@ -308,7 +311,6 @@ msg_t canTransmitTimeout(CANDriver *canp,
  *                        event driven scenario where a thread never blocks
  *                        for I/O).
  *                      - @a TIME_INFINITE no timeout.
- *                      .
  * @return              The operation result.
  * @retval MSG_OK       a frame has been received and placed in the buffer.
  * @retval MSG_TIMEOUT  The operation has timed out.

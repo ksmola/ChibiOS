@@ -228,6 +228,15 @@
 #endif
 
 /**
+ * @brief   ADC3 BDMA enable switch.
+ * @details If set to @p TRUE the ADC3 uses BDMA.
+ * @note    The default is @p FALSE.
+ */
+#if !defined(STM32_ADC_ADC3_USE_BDMA) || defined(__DOXYGEN__)
+#define STM32_ADC_ADC3_USE_BDMA             FALSE
+#endif
+
+/**
  * @brief   ADC1/ADC2 DMA priority (0..3|lowest..highest).
  */
 #if !defined(STM32_ADC_ADC12_DMA_PRIORITY) || defined(__DOXYGEN__)
@@ -339,19 +348,30 @@
 #error "STM32_ADC_ADC12_DMA_STREAM not defined"
 #endif
 
-#if STM32_ADC_USE_ADC3 && !defined(STM32_ADC_ADC3_BDMA_STREAM)
-#error "STM32_ADC_ADC3_BDMA_STREAM not defined"
+/* Check ADC3 DMA stream settings in mcuconf.h.*/
+#if STM32_ADC_USE_ADC3 && !defined(STM32_ADC_ADC3_BDMA_STREAM) &&           \
+                          !defined(STM32_ADC_ADC3_DMA_STREAM)
+#error "STM32_ADC_ADC3_DMA_STREAM or STM32_ADC_ADC3_BDMA_STREAM must be defined"
+#endif
+
+/* Check the assignment of BDMA stream for ADC3.*/
+#if STM32_ADC_USE_ADC3 && STM32_ADC_ADC3_USE_BDMA
+#if !STM32_BDMA_IS_VALID_STREAM(STM32_ADC_ADC3_BDMA_STREAM)
+#error "Invalid BDMA channel assigned to ADC3"
+#endif
+#endif
+
+/* Check the assignment of DMA stream for ADC3.*/
+#if STM32_ADC_USE_ADC3 && !STM32_ADC_ADC3_USE_BDMA
+#if !STM32_DMA_IS_VALID_STREAM(STM32_ADC_ADC3_DMA_STREAM)
+#error "Invalid DMA channel assigned to ADC3"
+#endif
 #endif
 
 /* DMA channel range tests.*/
 #if STM32_ADC_USE_ADC12 &&                                                  \
     !STM32_DMA_IS_VALID_STREAM(STM32_ADC_ADC12_DMA_STREAM)
 #error "Invalid DMA channel assigned to ADC12"
-#endif
-
-#if STM32_ADC_USE_ADC3 &&                                                   \
-    !STM32_BDMA_IS_VALID_STREAM(STM32_ADC_ADC3_BDMA_STREAM)
-#error "Invalid DMA channel assigned to ADC3"
 #endif
 
 /* DMA priority tests.*/
@@ -505,12 +525,17 @@
 #endif
 #endif
 
-#if STM32_ADC_USE_ADC3
+#if STM32_ADC_USE_ADC3 && STM32_ADC_ADC3_USE_BDMA
 #define STM32_ADC_BDMA_REQUIRED
 #if !defined(STM32_BDMA_REQUIRED)
 #define STM32_BDMA_REQUIRED
-#endif
-#endif
+#elif !defined(STM32_ADC_DMA_REQUIRED)
+#define STM32_ADC_DMA_REQUIRED
+#if !defined(STM32_DMA_REQUIRED)
+#define STM32_DMA_REQUIRED
+#endif /* !defined(STM32_DMA_REQUIRED) */
+#endif /* !defined(STM32_BDMA_REQUIRED) */
+#endif /* STM32_ADC_USE_ADC3 && STM32_ADC_ADC3_USE_BDMA */
 
 /*===========================================================================*/
 /* Driver data structures and types.                                         */
@@ -573,7 +598,7 @@ typedef union {
   /* Pointer to associated DMA channel.*/                                   \
   adc_ldd_dma_reference_t   data;                                           \
   /* DMA mode bit mask.*/                                                   \
-  uint32_t                  dmamode
+  uint32_t                  dmamode;
 #else
 #define adc_lld_driver_fields                                               \
   /* Pointer to the master ADCx registers block.*/                          \
@@ -583,7 +608,7 @@ typedef union {
   /* Pointer to associated DMA channel.*/                                   \
   adc_ldd_dma_reference_t   data;                                           \
   /* DMA mode bit mask.*/                                                   \
-  uint32_t                  dmamode
+  uint32_t                  dmamode;
 #endif
 
 /**
@@ -593,7 +618,7 @@ typedef union {
   /* ADC DIFSEL register initialization data.*/                             \
   uint32_t                  difsel;                                         \
   /* Calibration mode, specify ADCCALIN and/or ADCCALDIF bits in here.*/    \
-  uint32_t                  calibration
+  uint32_t                  calibration;
 
 #if (STM32_ADC_DUAL_MODE == TRUE) || defined(__DOXYGEN__)
 #define adc_lld_configuration_group_fields                                  \
@@ -648,7 +673,7 @@ typedef union {
   uint32_t                  ssmpr[2];                                       \
   /* Slave ADC SQRx register initialization data.                           \
      NOTE: This field is only present in dual mode.*/                       \
-  uint32_t                  ssqr[4]
+  uint32_t                  ssqr[4];
 #else /* STM32_ADC_DUAL_MODE == FALSE */
 #define adc_lld_configuration_group_fields                                  \
   uint32_t                  cfgr;                                           \
@@ -664,7 +689,7 @@ typedef union {
   uint32_t                  awd2cr;                                         \
   uint32_t                  awd3cr;                                         \
   uint32_t                  smpr[2];                                        \
-  uint32_t                  sqr[4]
+  uint32_t                  sqr[4];
 #endif /* STM32_ADC_DUAL_MODE == FALSE */
 
 /**

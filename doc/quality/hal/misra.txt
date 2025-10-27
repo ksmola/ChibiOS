@@ -7,8 +7,6 @@
 
 --- Module:   ..\..\..\os\hal\src\hal_queues.c (C)
 
---- Module:   ..\..\..\os\hal\src\hal_flash.c (C)
-
 --- Module:   ..\..\..\os\hal\src\hal_mmcsd.c (C)
 
 --- Module:   ..\..\..\os\hal\src\hal_adc.c (C)
@@ -59,6 +57,8 @@
 
 --- Module:   ..\..\..\os\hal\src\hal_wspi.c (C)
 
+--- Module:   ..\..\..\os\hal\src\hal_flash.c (C)
+
 --- Module:   ..\..\..\os\hal\templates\osal\osal.c (C)
 
 --- Module:   ..\..\..\os\hal\templates\hal_lld.c (C)
@@ -95,7 +95,7 @@
 
 --- Module:   ..\..\..\os\hal\templates\hal_sio_lld.c (C)
 
---- Module:   ..\..\..\os\hal\templates\hal_spi_lld.c (C)
+--- Module:   ..\..\..\os\hal\templates\hal_spi_v2_lld.c (C)
 
 --- Module:   ..\..\..\os\hal\templates\hal_st_lld.c (C)
 
@@ -108,6 +108,3 @@
 --- Module:   ..\..\..\os\hal\templates\hal_wdg_lld.c (C)
 
 --- Module:   ..\..\..\os\hal\templates\hal_wspi_lld.c (C)
-
-executed 6-13-2021
-

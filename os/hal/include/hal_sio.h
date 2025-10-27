@@ -51,6 +51,8 @@
  * @name    Event flags (compatible with channel and serial events)
  * @{
  */
+/*lint -save -e9053 [12.2] MISRA seems to assume that the underlying type
+  is 8 bits wide, it is not.*/
 #define SIO_EV_NONE                     0U
 #define SIO_EV_RXNOTEMPY                (1U << SIO_EV_RXNOTEMPY_POS)
 #define SIO_EV_TXNOTFULL                (1U << SIO_EV_TXNOTFULL_POS)
@@ -71,13 +73,14 @@
                                          SIO_EV_ALL_ERRORS  |               \
                                          SIO_EV_TXDONE      |               \
                                          SIO_EV_RXIDLE)
+/*lint -restore*/
 /** @} */
 
 /**
  * @name    Additional messages
  * @{
  */
-#define SIO_MSG_ERRORS                  1
+#define SIO_MSG_ERRORS                  (msg_t)1
 /** @} */
 
 /*===========================================================================*/
@@ -152,7 +155,7 @@ typedef void (*siocb_t)(SIODriver *siop);
 typedef enum {
   SIO_UNINIT = 0,                   /**< Not initialized.                   */
   SIO_STOP = 1,                     /**< Stopped.                           */
-  SIO_READY = 2,                    /**< Ready.                             */
+  SIO_READY = 2                     /**< Ready.                             */
 } siostate_t;
 
 #include "hal_sio_lld.h"
@@ -164,7 +167,7 @@ typedef enum {
  */
 struct hal_sio_config {
   /* End of the mandatory fields.*/
-  sio_lld_config_fields;
+  sio_lld_config_fields
 #if defined(SIO_CONFIG_EXT_FIELS)
   SIO_CONFIG_EXT_FIELDS
 #endif
@@ -241,7 +244,7 @@ struct hal_sio_driver {
   SIO_DRIVER_EXT_FIELDS
 #endif
   /* End of the mandatory fields.*/
-  sio_lld_driver_fields;
+  sio_lld_driver_fields
 };
 
 /*===========================================================================*/

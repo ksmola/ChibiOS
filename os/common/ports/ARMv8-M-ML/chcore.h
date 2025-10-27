@@ -410,8 +410,7 @@ struct port_context {
  * @brief   Initialization of FPU part of thread context.
  */
 #if (CORTEX_USE_FPU == TRUE) || defined(__DOXYGEN__)
-  #define PORT_SETUP_CONTEXT_FPU(tp)                                        \
-    (tp)->ctx.sp->fpscr = (uint32_t)0
+  #define PORT_SETUP_CONTEXT_FPU(tp)
 #else
   #define PORT_SETUP_CONTEXT_FPU(tp)
 #endif
@@ -511,12 +510,29 @@ struct port_context {
 #else
   #define port_switch(ntp, otp) do {                                        \
     struct port_intctx *r13 = (struct port_intctx *)__get_PSP();            \
-    if ((stkalign_t *)(r13 - 1) < (otp)->wabase) {                          \
+    if ((stkalign_t *)(void *)(r13 - 1) < (otp)->wabase) {                  \
       chSysHalt("stack overflow");                                          \
     }                                                                       \
     __port_switch(ntp, otp);                                                \
   } while (false)
 #endif
+
+/**
+ * @brief   Returns a word representing a critical section status.
+ *
+ * @return              The critical section status.
+ */
+#define port_get_lock_status() __port_get_irq_status()
+
+/**
+ * @brief   Determines if in a critical section.
+ *
+ * @param[in] sts       status word returned by @p port_get_lock_status()
+ * @return              The current status.
+ * @retval false        if running outside a critical section.
+ * @retval true         if running within a critical section.
+ */
+#define port_is_locked(sts) !__port_irq_enabled(sts)
 
 /*===========================================================================*/
 /* External declarations.                                                    */
@@ -546,7 +562,7 @@ extern "C" {
   *
   * @return              The interrupts status.
   */
- __STATIC_FORCEINLINE syssts_t port_get_irq_status(void) {
+ __STATIC_FORCEINLINE syssts_t __port_get_irq_status(void) {
    syssts_t sts;
 
  #if CORTEX_SIMPLIFIED_PRIORITY == FALSE
@@ -566,7 +582,7 @@ extern "C" {
   * @retval false        the word specified a disabled interrupts status.
   * @retval true         the word specified an enabled interrupts status.
   */
- __STATIC_FORCEINLINE bool port_irq_enabled(syssts_t sts) {
+ __STATIC_FORCEINLINE bool __port_irq_enabled(syssts_t sts) {
 
  #if CORTEX_SIMPLIFIED_PRIORITY == FALSE
    return sts == (syssts_t)CORTEX_BASEPRI_DISABLED;

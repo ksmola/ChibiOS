@@ -40,7 +40,7 @@
 #define HALCONF_H
 
 #define _CHIBIOS_HAL_CONF_
-#define _CHIBIOS_HAL_CONF_VER_8_4_
+#define _CHIBIOS_HAL_CONF_VER_9_0_
 
 #include "mcuconf.h"
 
@@ -315,6 +315,14 @@
 /*===========================================================================*/
 /* I2C driver related settings.                                              */
 /*===========================================================================*/
+
+/**
+ * @brief   Slave mode API enable switch.
+ * @note    The low level driver must support this capability.
+ */
+#if !defined(I2C_ENABLE_SLAVE_MODE)
+#define I2C_ENABLE_SLAVE_MODE               ${doc.I2C_ENABLE_SLAVE_MODE!"FALSE"}
+#endif
 
 /**
  * @brief   Enables the mutual exclusion APIs on the I2C bus.

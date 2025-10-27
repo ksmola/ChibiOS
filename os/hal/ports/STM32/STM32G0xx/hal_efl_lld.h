@@ -52,7 +52,7 @@
 /*===========================================================================*/
 
 #if defined(STM32G070xx) || defined(STM32G071xx) ||                         \
-    defined(STM32G081xx) ||                                                 \
+    defined(STM32G081xx) || defined(STM32G0B1xx) ||                         \
     defined(__DOXYGEN__)
 
 /* Flash size register. */
@@ -107,7 +107,7 @@ typedef struct {
  */
 #define efl_lld_config_fields                                               \
   /* Dummy configuration, it is not needed.*/                               \
-  uint32_t                  dummy
+  uint32_t                  dummy;
 
 /*===========================================================================*/
 /* External declarations.                                                    */

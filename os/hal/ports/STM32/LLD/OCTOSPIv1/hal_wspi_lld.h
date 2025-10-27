@@ -129,28 +129,28 @@
  * @brief   OCTOSPI1 TCR_SSHIFT enforcing.
  */
 #if !defined(STM32_WSPI_OCTOSPI1_SSHIFT) || defined(__DOXYGEN__)
-#define STM32_WSPI_OCTOSPI1_SSHIFT            TRUE
+#define STM32_WSPI_OCTOSPI1_SSHIFT          FALSE
 #endif
 
 /**
  * @brief   OCTOSPI2 TCR_SSHIFT enforcing.
  */
 #if !defined(STM32_WSPI_OCTOSPI2_SSHIFT) || defined(__DOXYGEN__)
-#define STM32_WSPI_OCTOSPI2_SSHIFT            TRUE
+#define STM32_WSPI_OCTOSPI2_SSHIFT          FALSE
 #endif
 
 /**
  * @brief   OCTOSPI1 TCR_DHQC enforcing.
  */
 #if !defined(STM32_WSPI_OCTOSPI1_DHQC) || defined(__DOXYGEN__)
-#define STM32_WSPI_OCTOSPI1_DHQC              TRUE
+#define STM32_WSPI_OCTOSPI1_DHQC            FALSE
 #endif
 
 /**
  * @brief   OCTOSPI2 TCR_DHQC enforcing.
  */
 #if !defined(STM32_WSPI_OCTOSPI2_DHQC) || defined(__DOXYGEN__)
-#define STM32_WSPI_OCTOSPI2_DHQC              TRUE
+#define STM32_WSPI_OCTOSPI2_DHQC            FALSE
 #endif
 
 /**
@@ -314,7 +314,7 @@
   /* DCR3 register initialization data.*/                                   \
   uint32_t                  dcr3;                                           \
   /* DCR4 register initialization data.*/                                   \
-  uint32_t                  dcr4
+  uint32_t                  dcr4;
 
 /**
  * @brief   Low level fields of the WSPI driver structure.
@@ -327,7 +327,7 @@
   /* OCTOSPI DMA stream.*/                                                  \
   const stm32_dma_stream_t  *dma;                                           \
   /* OCTOSPI DMA mode bit mask.*/                                           \
-  uint32_t                  dmamode
+  uint32_t                  dmamode;
 
 /*===========================================================================*/
 /* External declarations.                                                    */

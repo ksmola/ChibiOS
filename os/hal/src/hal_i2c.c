@@ -104,16 +104,17 @@ msg_t i2cStart(I2CDriver *i2cp, const I2CConfig *config) {
 
 #if defined(I2C_LLD_ENHANCED_API)
   msg = i2c_lld_start(i2cp);
-#else
-  i2c_lld_start(i2cp);
-  msg = HAL_RET_SUCCESS;
-#endif
   if (msg == HAL_RET_SUCCESS) {
     i2cp->state = I2C_READY;
   }
   else {
     i2cp->state = I2C_STOP;
   }
+#else
+  i2c_lld_start(i2cp);
+  i2cp->state = I2C_READY;
+  msg = HAL_RET_SUCCESS;
+#endif
 
   osalSysUnlock();
 
@@ -174,7 +175,6 @@ i2cflags_t i2cGetErrors(I2CDriver *i2cp) {
  * @param[in] timeout   the number of ticks before the operation timeouts,
  *                      the following special values are allowed:
  *                      - @a TIME_INFINITE no timeout.
- *                      .
  *
  * @return              The operation status.
  * @retval MSG_OK       if the function succeeded.
@@ -225,7 +225,6 @@ msg_t i2cMasterTransmitTimeout(I2CDriver *i2cp,
  * @param[in] timeout   the number of ticks before the operation timeouts,
  *                      the following special values are allowed:
  *                      - @a TIME_INFINITE no timeout.
- *                      .
  *
  * @return              The operation status.
  * @retval MSG_OK       if the function succeeded.
@@ -299,7 +298,7 @@ void i2cReleaseBus(I2CDriver *i2cp) {
 }
 #endif /* I2C_USE_MUTUAL_EXCLUSION == TRUE */
 
-#if (I2C_SUPPORTS_SLAVE_MODE == TRUE) || defined(__DOXYGEN__)
+#if (I2C_ENABLE_SLAVE_MODE == TRUE) || defined(__DOXYGEN__)
 /**
  * @brief   Listen I2C bus for address match.
  * @details Use 7 bit address (10 bit,dual and general call address dosn't implement yet) .
@@ -335,7 +334,6 @@ msg_t i2cSlaveMatchAddress(I2CDriver *i2cp, i2caddr_t addr) {
  * @param[in] timeout   the number of ticks before the operation timeouts,
  *                      the following special values are allowed:
  *                      - @a TIME_INFINITE no timeout.
- *                      .
  * @return              The operation status.
  * @retval MSG_OK       if the function succeeded.
  * @retval MSG_RESET    if one or more I2C errors occurred, the errors can
@@ -387,7 +385,6 @@ msg_t i2cSlaveReceiveTimeout(I2CDriver *i2cp,
  * @param[in] timeout   the number of ticks before the operation timeouts,
  *                      the following special values are allowed:
  *                      - @a TIME_INFINITE no timeout.
- *                      .
  * @return              The operation status.
  * @retval MSG_OK       if the function succeeded.
  * @retval MSG_RESET    if one or more I2C errors occurred, the errors can
@@ -427,7 +424,7 @@ msg_t i2cSlaveTransmitTimeout(I2CDriver *i2cp,
 
   return rdymsg;
 }
-#endif /* I2C_SUPPORTS_SLAVE_MODE == TRUE */
+#endif /* I2C_ENABLE_SLAVE_MODE == TRUE */
 
 #endif /* HAL_USE_I2C == TRUE */
 

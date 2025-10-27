@@ -77,7 +77,7 @@ void macObjectInit(MACDriver *macp) {
 
   macp->state  = MAC_STOP;
   macp->config = NULL;
-  macp->flags  = 0U;
+  macp->flags  = (eventflags_t)0;
   macp->cb     = NULL;
   macp->arg    = NULL;
   osalThreadQueueObjectInit(&macp->tdqueue);
@@ -109,16 +109,17 @@ msg_t macStart(MACDriver *macp, const MACConfig *config) {
 
 #if defined(MAC_LLD_ENHANCED_API)
   msg = mac_lld_start(macp);
-#else
-  mac_lld_start(macp);
-  msg = HAL_RET_SUCCESS;
-#endif
   if (msg == HAL_RET_SUCCESS) {
     macp->state = MAC_ACTIVE;
   }
   else {
     macp->state = MAC_STOP;
   }
+#else
+  mac_lld_start(macp);
+  macp->state = MAC_ACTIVE;
+  msg = HAL_RET_SUCCESS;
+#endif
 
   osalSysUnlock();
 
@@ -149,7 +150,7 @@ void macStop(MACDriver *macp) {
 }
 
 /**
- * @brief   Get and clears SIO event flags.
+ * @brief   Get and clears MAC event flags.
  *
  * @param[in] macp      pointer to the @p MACDriver object
  * @return              The pending event flags.
@@ -177,7 +178,6 @@ eventflags_t macGetAndClearEventsI(MACDriver *macp) {
  *                      the following special values are allowed:
  *                      - @a TIME_IMMEDIATE immediate timeout.
  *                      - @a TIME_INFINITE no timeout.
- *                      .
  * @return              The operation status.
  * @retval MSG_OK       the descriptor was obtained.
  * @retval MSG_TIMEOUT  the operation timed out, descriptor not initialized.
@@ -218,7 +218,6 @@ msg_t macWaitTransmitDescriptor(MACDriver *macp,
  *                      the following special values are allowed:
  *                      - @a TIME_IMMEDIATE immediate timeout.
  *                      - @a TIME_INFINITE no timeout.
- *                      .
  * @return              The operation status.
  * @retval MSG_OK       the descriptor was obtained.
  * @retval MSG_TIMEOUT  the operation timed out, descriptor not initialized.

@@ -59,7 +59,15 @@
  * @brief   Enables the mutual exclusion APIs on the I2C bus.
  */
 #if !defined(I2C_USE_MUTUAL_EXCLUSION) || defined(__DOXYGEN__)
-#define I2C_USE_MUTUAL_EXCLUSION    TRUE
+#define I2C_USE_MUTUAL_EXCLUSION            TRUE
+#endif
+
+/**
+ * @brief   Slave mode API enable switch.
+ * @note    The low level driver must support this capability.
+ */
+#if !defined(I2C_ENABLE_SLAVE_MODE)
+#define I2C_ENABLE_SLAVE_MODE               FALSE
 #endif
 
 /*===========================================================================*/
@@ -89,10 +97,18 @@ typedef enum {
 #define I2C_SUPPORTS_SLAVE_MODE             FALSE
 #endif
 
+#if (I2C_SUPPORTS_SLAVE_MODE == FALSE) && (I2C_ENABLE_SLAVE_MODE == TRUE)
+#error "I2C slave mode not supported"
+#endif
+
 /*===========================================================================*/
 /* Driver macros.                                                            */
 /*===========================================================================*/
 
+/**
+ * @name    Macro Functions
+ * @{
+ */
 /**
  * @brief   Wakes up the waiting thread notifying no errors.
  *
@@ -134,6 +150,22 @@ typedef enum {
 #define i2cMasterReceive(i2cp, addr, rxbuf, rxbytes)                        \
   (i2cMasterReceiveTimeout(i2cp, addr, rxbuf, rxbytes, TIME_INFINITE))
 
+#if (I2C_ENABLE_SLAVE_MODE == TRUE) || defined(__DOXYGEN__)
+/**
+ * @brief   Answer required.
+ * @note    This function is meant to be called after slave receive only.
+ *
+ * @param[in] i2cp      pointer to the @p I2CDriver object
+ * @return              Slave answer required.
+ * @retval              false if the slave must not answer.
+ * @retval              true if the slave must answer.
+ *
+ * @special
+ */
+#define i2cSlaveIsAnswerRequired(i2cp) (((i2cp)->reply_required))
+#endif
+/** @} */
+
 /*===========================================================================*/
 /* External declarations.                                                    */
 /*===========================================================================*/
@@ -159,7 +191,7 @@ extern "C" {
   void i2cAcquireBus(I2CDriver *i2cp);
   void i2cReleaseBus(I2CDriver *i2cp);
 #endif
-#if I2C_SUPPORTS_SLAVE_MODE == TRUE
+#if I2C_ENABLE_SLAVE_MODE == TRUE
   msg_t i2cSlaveMatchAddress(I2CDriver *i2cp, i2caddr_t  i2cadr);
   msg_t i2cSlaveReceiveTimeout(I2CDriver *i2cp, uint8_t *rxbuf,
                                size_t rxbytes, sysinterval_t timeout);

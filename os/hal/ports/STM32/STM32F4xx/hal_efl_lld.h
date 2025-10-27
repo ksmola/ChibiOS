@@ -65,8 +65,10 @@
 #define STM32_FLASH_NUMBER_OF_BANKS         1
 #define STM32_FLASH1_SIZE                   1536U
 #define STM32_FLASH2_SIZE                   1024U
+#define STM32_FLASH3_SIZE                   512U
 #define STM32_FLASH1_SECTORS_TOTAL          16
 #define STM32_FLASH2_SECTORS_TOTAL          12
+#define STM32_FLASH3_SECTORS_TOTAL          8
 
 #elif defined(STM32F401xx) || defined(STM32F411xx) ||                         \
     defined(__DOXYGEN__)
@@ -142,7 +144,7 @@ typedef struct {
  */
 #define efl_lld_config_fields                                               \
   /* Dummy configuration, it is not needed.*/                               \
-  uint32_t                  dummy
+  uint32_t                  dummy;
 
 /*===========================================================================*/
 /* External declarations.                                                    */

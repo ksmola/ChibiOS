@@ -680,11 +680,13 @@ namespace chibios_rt {
      *          returned to the proper allocator and the thread is removed
      *          from the registry.<br>
      *          Threads whose counter reaches zero and are still active become
-     *          "detached" and will be removed from registry on termination.
+     *          "detached". Detached static threads will be removed from the
+     *          registry on termination. Detached non-static threads can only be
+     *          removed by performing a registry scan operation.
      * @pre     The configuration option @p CH_CFG_USE_REGISTRY must be enabled in
      *          order to use this function.
      * @post    The reference is set to @p nullptr.
-     * @note    Static threads are not affected.
+     * @note    Static threads are not affected, only removed from the registry.
      *
      * @api
      */
@@ -1408,7 +1410,7 @@ namespace chibios_rt {
      * @retval MSG_OK       if the binary semaphore has been successfully
      *                      taken.
      * @retval MSG_RESET    if the binary semaphore has been reset using
-     *                      @p bsemReset().
+     *                      @p chBSemReset().
      * @retval MSG_TIMEOUT  if the binary semaphore has not been signaled
      *                      or reset within the specified timeout.
      *
@@ -1800,7 +1802,7 @@ namespace chibios_rt {
      * @retval MSG_OK       if the binary semaphore has been successfully
      *                      taken.
      * @retval MSG_RESET    if the binary semaphore has been reset using
-     *                      @p bsemReset().
+     *                      @p chBSemReset().
      *
      * @api
      */
@@ -1817,7 +1819,7 @@ namespace chibios_rt {
      * @retval MSG_OK       if the binary semaphore has been successfully
      *                      taken.
      * @retval MSG_RESET    if the binary semaphore has been reset using
-     *                      @p bsemReset().
+     *                      @p chBSemReset().
      *
      * @sclass
      */
@@ -1839,7 +1841,7 @@ namespace chibios_rt {
      * @retval MSG_OK       if the binary semaphore has been successfully
      *                      taken.
      * @retval MSG_RESET    if the binary semaphore has been reset using
-     *                      @p bsemReset().
+     *                      @p chBSemReset().
      * @retval MSG_TIMEOUT  if the binary semaphore has not been signaled
      *                      or reset within the specified timeout.
      *
@@ -1863,7 +1865,7 @@ namespace chibios_rt {
      * @retval MSG_OK       if the binary semaphore has been successfully
      *                      taken.
      * @retval MSG_RESET    if the binary semaphore has been reset using
-     *                      @p bsemReset().
+     *                      @p chBSemReset().
      * @retval MSG_TIMEOUT  if the binary semaphore has not been signaled
      *                      or reset within the specified timeout.
      *
@@ -1877,7 +1879,7 @@ namespace chibios_rt {
     /**
      * @brief   Reset operation on the binary semaphore.
      * @note    The released threads can recognize they were waked up by a
-     *          reset rather than a signal because the @p bsemWait() will
+     *          reset rather than a signal because the @p chBSemWait() will
      *          return @p MSG_RESET instead of @p MSG_OK.
      *
      * @param[in] taken     new state of the binary semaphore
@@ -1895,7 +1897,7 @@ namespace chibios_rt {
     /**
      * @brief   Reset operation on the binary semaphore.
      * @note    The released threads can recognize they were waked up by a
-     *          reset rather than a signal because the @p bsemWait() will
+     *          reset rather than a signal because the @p chBSemWait() will
      *          return @p MSG_RESET instead of @p MSG_OK.
      * @note    This function does not reschedule.
      *
