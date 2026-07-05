@@ -283,14 +283,14 @@ CANDriver CAND3;
 /* Driver local functions.                                                   */
 /*===========================================================================*/
 
-static bool fdcan_clock_stop(CANDriver *canp) {
+static bool fdcan_init_mode(CANDriver *canp) {
   systime_t start, end;
 
-  /* Requesting clock stop then waiting for it to happen.*/
-  canp->fdcan->CCCR |= FDCAN_CCCR_CSR;
+  /* Going in initialization mode then waiting for it to happen.*/
+  canp->fdcan->CCCR |= FDCAN_CCCR_INIT;
   start = osalOsGetSystemTimeX();
   end = osalTimeAddX(start, TIME_MS2I(TIMEOUT_INIT_MS));
-  while ((canp->fdcan->CCCR & FDCAN_CCCR_CSA) == 0U) {
+  while ((canp->fdcan->CCCR & FDCAN_CCCR_INIT) == 0U) {
     if (!osalTimeIsInRangeX(osalOsGetSystemTimeX(), start, end)) {
       return true;
     }
@@ -300,14 +300,24 @@ static bool fdcan_clock_stop(CANDriver *canp) {
   return false;
 }
 
-static bool fdcan_init_mode(CANDriver *canp) {
+static bool fdcan_clock_stop(CANDriver *canp) {
   systime_t start, end;
 
-  /* Going in initialization mode then waiting for it to happen.*/
-  canp->fdcan->CCCR |= FDCAN_CCCR_INIT;
+  /* A clock stop request is only acknowledged once the ongoing transmission
+     completes. A transmission being endlessly retried because it is never
+     acknowledged (e.g. no other node, or a bit rate mismatch) never
+     completes, CSA never asserts and the request times out. Entering
+     initialization mode first stops all bus activity immediately and
+     guarantees the clock stop is granted.*/
+  if (fdcan_init_mode(canp)) {
+    return true;
+  }
+
+  /* Requesting clock stop then waiting for it to happen.*/
+  canp->fdcan->CCCR |= FDCAN_CCCR_CSR;
   start = osalOsGetSystemTimeX();
   end = osalTimeAddX(start, TIME_MS2I(TIMEOUT_INIT_MS));
-  while ((canp->fdcan->CCCR & FDCAN_CCCR_INIT) == 0U) {
+  while ((canp->fdcan->CCCR & FDCAN_CCCR_CSA) == 0U) {
     if (!osalTimeIsInRangeX(osalOsGetSystemTimeX(), start, end)) {
       return true;
     }
@@ -561,7 +571,27 @@ void can_lld_stop(CANDriver *canp) {
     /* Disables the peripheral.*/
     (void) fdcan_clock_stop(canp);
 
-    rccDisableFDCAN();
+    /* All FDCAN instances share a single clock enable, it can only be
+       disabled when no other instance is in use.*/
+    bool others_active = false;
+#if STM32_CAN_USE_FDCAN1
+    if ((&CAND1 != canp) && (CAND1.state != CAN_STOP)) {
+      others_active = true;
+    }
+#endif
+#if STM32_CAN_USE_FDCAN2
+    if ((&CAND2 != canp) && (CAND2.state != CAN_STOP)) {
+      others_active = true;
+    }
+#endif
+#if STM32_CAN_USE_FDCAN3
+    if ((&CAND3 != canp) && (CAND3.state != CAN_STOP)) {
+      others_active = true;
+    }
+#endif
+    if (!others_active) {
+      rccDisableFDCAN();
+    }
   }
 }
 
